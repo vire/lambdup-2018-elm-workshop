@@ -16,12 +16,15 @@ import Url.Builder
 
 
 type alias Model =
-    {}
+    { searchString : String }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( {}, Cmd.none )
+    ( { searchString = "Blade Runner"
+      }
+    , Cmd.none
+    )
 
 
 
@@ -30,11 +33,21 @@ init =
 
 type Msg
     = NoOp
+    | EnteredSearchString String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
+        EnteredSearchString value ->
+            ( { model
+                | searchString = value
+              }
+            , Cmd.none
+            )
 
 
 
@@ -46,8 +59,40 @@ view model =
     div []
         [ div [ class "header" ]
             [ img [ src "%PUBLIC_URL%/logo.svg" ] []
-            , h1 [] [ text "Hello, LambdUp Workshop!" ]
+            , form [ class "search-form" ]
+                [ input
+                    [ class "search-input"
+                    , type_ "text"
+                    , placeholder "Search Movie by Title"
+                    , value model.searchString
+                    , onInput EnteredSearchString
+                    ]
+                    []
+                , input
+                    [ class "search-button"
+                    , type_ "submit"
+                    , value "Search"
+                    ]
+                    []
+                ]
             ]
+        , viewMovieList
+        ]
+
+
+viewMovieList : Html Msg
+viewMovieList =
+    div [ class "movie-list" ]
+        (List.map viewMovieItem [ { title = "Blade runner" }, { title = "Avenger" }, { title = "Avatar" } ])
+
+
+viewMovieItem : { title : String } -> Html Msg
+viewMovieItem movie =
+    div [ class "movie-item" ]
+        [ div [ class "movie-item-poster", attribute "style" "background-image: url('https://m.media-amazon.com/images/M/MV5BNzA1Njg4NzYxOV5BMl5BanBnXkFtZTgwODk5NjU3MzI@._V1_SX300.jpg');" ]
+            []
+        , h3 [ class "movie-item-title" ]
+            [ text movie.title ]
         ]
 
 
